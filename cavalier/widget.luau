@@ -33,10 +33,36 @@ local SHOW_VIS = noctalia.getConfig("show_visualizer") ~= false
 local VIS_RIGHT = noctalia.getConfig("visualizer_position") == "right"
 local BAR_COUNT = math.max(4, math.floor(tonumber(noctalia.getConfig("bar_count")) or 14))
 local ACCENT = noctalia.getConfig("accent_color") or "primary"
+-- Glyph colour on an ACCENT fill: the palette pairs each fill role with an
+-- "on_" role (primary/on_primary, surface/on_surface, ...), so take the other
+-- half of the pair. A hex colour or an unpaired role (outline, shadow) has no
+-- partner and falls back to the page surface.
+local PAIRED_ROLES = {
+  primary = true,
+  secondary = true,
+  tertiary = true,
+  error = true,
+  surface = true,
+  surface_variant = true,
+  hover = true,
+}
+local function foregroundFor(fill)
+  local role = fill:match("^[%a_]+") or ""
+  if role:sub(1, 3) == "on_" and PAIRED_ROLES[role:sub(4)] then
+    return role:sub(4)
+  end
+  if PAIRED_ROLES[role] then
+    return "on_" .. role
+  end
+  return "surface"
+end
+local ACCENT_FG = foregroundFor(ACCENT)
 local CC_CONTEXT = noctalia.getConfig("cc_context") or "media"
 
 local MAX_BAR_H = 16 -- px; kept short so the capsule never clips
 local MIN_BAR_H = 2
+local PLAY_SIZE = 23 -- px; the compact button the filled play/pause replaced
+local PLAY_RADIUS = 6
 
 -- ── State ────────────────────────────────────────────────────────────────────
 local isVertical = false
@@ -103,18 +129,22 @@ local function render()
     tooltip = noctalia.tr("tooltip.previous"),
     onClick = "onPrev",
   }))
-  -- Play/pause: only a real ui.button consumes its click in the bar (container
-  -- click-targets fall through to the widget-level onClick / panel). A filled
-  -- "primary" variant gives the accent background; a compact size makes the
-  -- theme's button radius reach half the size, so it reads as a circle.
-  table.insert(kids, ui.button({
+  -- Play/pause is filled with the accent colour. ui.button only offers fixed
+  -- variants (the filled one is always the theme primary), so paint the fill on
+  -- a row instead: a row with onClick gets its own input area and consumes the
+  -- click, so it does not fall through to the widget-level onClick. The size
+  -- and radius match the compact primary button this replaced.
+  table.insert(kids, ui.row({
     key = "playpause",
-    glyph = playGlyph,
-    glyphSize = 15,
-    variant = "primary",
-    enabled = true,
-    tooltip = noctalia.tr("tooltip.playpause"),
+    width = PLAY_SIZE,
+    height = PLAY_SIZE,
+    radius = PLAY_RADIUS,
+    fill = ACCENT,
+    align = "center",
+    justify = "center",
     onClick = "onPlayPause",
+  }, {
+    ui.glyph({ key = "playpause-glyph", name = playGlyph, size = 15, color = ACCENT_FG }),
   }))
   table.insert(kids, ui.button({
     key = "next",
