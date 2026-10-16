@@ -251,7 +251,9 @@ function update()
 end
 
 function onAudioSpectrum(valuesCsv, stateCsv)
-  if not AUDIO_REACTIVE then return end
+  -- A hidden visualizer has nothing to draw: skip the per-frame parsing and
+  -- smoothing, which would otherwise run ~60 times a second during playback.
+  if not AUDIO_REACTIVE or not SHOW_VIS then return end
 
   local st = parseCsvNumbers(stateCsv)
   audioActive = st[1] == 1
