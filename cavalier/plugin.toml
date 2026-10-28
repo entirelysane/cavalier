@@ -94,3 +94,12 @@ entry = "widget.luau"
   description_key = "settings.cc_context.description"
   default = "media"
   advanced = true
+
+  [[widget.setting]]
+  key = "skip_glyph_size"
+  type = "int"
+  label_key = "settings.skip_glyph_size.label"
+  description_key = "settings.skip_glyph_size.description"
+  default = 14
+  min = 8
+  max = 20

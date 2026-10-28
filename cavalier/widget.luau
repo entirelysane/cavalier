@@ -63,8 +63,11 @@ local MAX_BAR_H = 16 -- px; kept short so the capsule never clips
 local MIN_BAR_H = 2
 local PLAY_SIZE = 23 -- px; the compact button the filled play/pause replaced
 local PLAY_RADIUS = 6
--- TODO: maybe this should be moved to the settings
-local SKIP_GLYPH_SIZE = 14 -- px; prev/next glyphs.
+local SKIP_GLYPH_SIZE = math.clamp(
+  math.floor(tonumber(noctalia.getConfig("skip_glyph_size")) or 14),
+  8,
+  20
+)
 
 -- ── State ────────────────────────────────────────────────────────────────────
 local isVertical = false

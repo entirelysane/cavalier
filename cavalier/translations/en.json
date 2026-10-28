@@ -18,5 +18,7 @@
   "settings.cc_context.label": "Control Center view",
   "settings.cc_context.description": "Control Center view opened when clicking the visualizer.",
   "tooltip.previous": "Previous",
-  "tooltip.next": "Next"
+  "tooltip.next": "Next",
+  "settings.skip_glyph_size.label": "Skip buttons icon size",
+  "settings.skip_glyph_size.description": "Size of the previous and next track icons"
 }
