@@ -63,6 +63,8 @@ local MAX_BAR_H = 16 -- px; kept short so the capsule never clips
 local MIN_BAR_H = 2
 local PLAY_SIZE = 23 -- px; the compact button the filled play/pause replaced
 local PLAY_RADIUS = 6
+-- TODO: maybe this should be moved to the settings
+local SKIP_GLYPH_SIZE = 14 -- px; prev/next glyphs.
 
 -- ── State ────────────────────────────────────────────────────────────────────
 local isVertical = false
@@ -112,6 +114,23 @@ local function visualizer()
   return ui.row({ key = "viz", gap = 2, align = "center", height = MAX_BAR_H }, bars)
 end
 
+-- Use row instead of ui.button to support custom accent fill.
+local function accentGlyphButton(key, glyph, tooltip, handler)
+  return ui.row({
+    key = key,
+    width = PLAY_SIZE,
+    height = PLAY_SIZE,
+    radius = PLAY_RADIUS,
+    fill = ACCENT,
+    align = "center",
+    justify = "center",
+    tooltip = tooltip,
+    onClick = handler,
+  }, {
+    ui.glyph({ key = key .. "-glyph", name = glyph, size = SKIP_GLYPH_SIZE, color = ACCENT_FG }),
+  })
+end
+
 local function render()
   local kids = {}
 
@@ -120,15 +139,11 @@ local function render()
   end
 
   local playGlyph = (status == "Playing") and "player-pause" or "player-play"
-  table.insert(kids, ui.button({
-    key = "prev",
-    glyph = "player-skip-back",
-    glyphSize = 13,
-    variant = "ghost",
-    enabled = true,
-    tooltip = noctalia.tr("tooltip.previous"),
-    onClick = "onPrev",
-  }))
+  table.insert(
+    kids,
+    accentGlyphButton("prev", "player-skip-back", noctalia.tr("tooltip.previous"), "onPrev")
+  )
+
   -- Play/pause is filled with the accent colour. ui.button only offers fixed
   -- variants (the filled one is always the theme primary), so paint the fill on
   -- a row instead: a row with onClick gets its own input area and consumes the
@@ -146,15 +161,11 @@ local function render()
   }, {
     ui.glyph({ key = "playpause-glyph", name = playGlyph, size = 15, color = ACCENT_FG }),
   }))
-  table.insert(kids, ui.button({
-    key = "next",
-    glyph = "player-skip-forward",
-    glyphSize = 13,
-    variant = "ghost",
-    enabled = true,
-    tooltip = noctalia.tr("tooltip.next"),
-    onClick = "onNext",
-  }))
+
+  table.insert(
+    kids,
+    accentGlyphButton("next", "player-skip-forward", noctalia.tr("tooltip.next"), "onNext")
+  )
 
   if SHOW_VIS and VIS_RIGHT then
     table.insert(kids, visualizer())
