@@ -103,3 +103,24 @@ entry = "widget.luau"
   default = 14
   min = 8
   max = 20
+
+  [[widget.setting]]
+  key = "previous_use_accent"
+  type = "bool"
+  label_key = "settings.previous_use_accent.label"
+  description_key = "settings.previous_use_accent.description"
+  default = false
+
+  [[widget.setting]]
+  key = "play_pause_use_accent"
+  type = "bool"
+  label_key = "settings.play_pause_use_accent.label"
+  description_key = "settings.play_pause_use_accent.description"
+  default = true
+
+  [[widget.setting]]
+  key = "next_use_accent"
+  type = "bool"
+  label_key = "settings.next_use_accent.label"
+  description_key = "settings.next_use_accent.description"
+  default = false
